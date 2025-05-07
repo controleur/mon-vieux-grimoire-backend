@@ -1,26 +1,18 @@
 const Book = require("../models/book");
 
 exports.createBook = (req, res, next) => {
+  const bookObject = JSON.parse(req.body.book);
+  delete bookObject._id;
+  delete bookObject._userId;
   const book = new Book({
-    userId: req.auth,
-    title: req.body.title,
-    author: req.body.author,
-    imageUrl: req.body.imageUrl,
-    year: req.body.year,
-    genre: req.body.genre,
+      ...bookObject,
+      userId: req.auth.userId,
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
   });
-  book
-    .save()
-    .then(() => {
-      res.status(201).json({
-        message: "Livre ajouté !",
-      });
-    })
-    .catch((error) => {
-      res.status(400).json({
-        error: error,
-      });
-    });
+
+  book.save()
+  .then(() => { res.status(201).json({message: 'Livre ajouté !'})})
+  .catch(error => { res.status(400).json( { error })})
 };
 
 exports.showAllBooks = (req, res, next) => {
@@ -29,7 +21,7 @@ exports.showAllBooks = (req, res, next) => {
       res.status(200).json(books);
     })
     .catch((error) => {
-      res.status(400).json({ error: error });
+      res.status(400).json({ error });
     });
 };
 
@@ -79,7 +71,7 @@ exports.updateBook = (req, res, next) => {
     })
     .catch((error) => {
       res.status(400).json({
-        error: error,
+        error,
       });
     });
 };
