@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bookRoutes = require('./routes/book');
+const userRoutes = require('./routes/user');
 
 mongoose.connect('mongodb+srv://devcontroleur:p4KIFGLIWBxYfALZ@cluster0.hujly5r.mongodb.net/test?retryWrites=true&w=majority')
     .then(() => console.log('Connexion à MongoDB réussie !'))
@@ -17,6 +18,8 @@ app.use((req, res, next) => {
     next();
   });
 app.use('/api/books', bookRoutes);
+
+app.use('/api/auth', userRoutes);
 
 
 
