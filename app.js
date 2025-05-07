@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const Book = require('./models/book');
 const bookRoutes = require('./routes/book');
 
 mongoose.connect('mongodb+srv://devcontroleur:p4KIFGLIWBxYfALZ@cluster0.hujly5r.mongodb.net/test?retryWrites=true&w=majority')
