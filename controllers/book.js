@@ -121,7 +121,7 @@ exports.addGrade = (req, res, next) => {
       book.ratings.push({ userId, grade });
 
       const totalRatings = book.ratings.reduce((sum, rating) => sum + rating.grade, 0);
-      book.averageRating = totalRatings / book.ratings.length;
+      book.averageRating = Math.round((totalRatings / book.ratings.length) * 10) / 10; // Arrondi au dixième pour respecter la maquette
 
       book.save()
         .then((updatedBook) => {
