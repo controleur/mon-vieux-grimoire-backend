@@ -42,7 +42,7 @@ exports.showOneBook = (req, res, next) => {
     })
     .catch((error) => {
       res.status(404).json({
-        error: error,
+        error
       });
     });
 };
@@ -51,7 +51,7 @@ exports.deleteBook = (req, res, next) => {
   Book.findOne({ _id: req.params.id })
     .then((book) => {
       if (book.userId != req.auth.userId) {
-        res.status(401).json({ message: "Non autorisé" });
+        res.status(401).json({ error });
       } else {
         const filename = book.imageUrl.split("/images/")[1];
         fs.unlink(`images/${filename}`, () => {
@@ -103,19 +103,19 @@ exports.addGrade = (req, res, next) => {
   const grade = parseInt(req.body.rating, 10);
 
   if (isNaN(grade) || grade < 0 || grade > 5) {
-    return res.status(400).json({ message: 'La note doit être un entier entre 0 et 5.' });
+    return res.status(400).json({ error });
   }
 
   Book.findOne({ _id: req.params.id })
     .then((book) => {
       if (!book) {
-        return res.status(404).json({ message: 'Livre non trouvé.' });
+        return res.status(404).json({ error });
       }
 
       const existingRating = book.ratings.find((rating) => rating.userId === userId);
 
       if (existingRating) {
-        return res.status(400).json({ message: 'Vous avez déjà noté ce livre.' });
+        return res.status(400).json({ error });
       }
 
       book.ratings.push({ userId, grade });
@@ -124,13 +124,8 @@ exports.addGrade = (req, res, next) => {
       book.averageRating = Math.round((totalRatings / book.ratings.length) * 10) / 10; // Arrondi au dixième pour respecter la maquette
 
       book.save()
-        .then((updatedBook) => {
-          const response = {
-            message: 'Note ajoutée avec succès !',
-            averageRating: updatedBook.averageRating,
-            _id: updatedBook._id.toString()
-          };
-          res.status(200).json(response);
+        .then((book) => {
+          res.status(200).json(book);
         })
         .catch((error) => res.status(500).json({ error }));
     })
