@@ -3,8 +3,9 @@ const mongoose = require('mongoose');
 const bookRoutes = require('./routes/book');
 const userRoutes = require('./routes/user');
 const path = require('path');
+require("dotenv").config(); //ajout dotenv pour masquer la string de connexion
 
-mongoose.connect('mongodb+srv://devcontroleur:p4KIFGLIWBxYfALZ@cluster0.hujly5r.mongodb.net/test?retryWrites=true&w=majority')
+mongoose.connect(process.env.DATABASE) //string contenue dans .env
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
