@@ -4,8 +4,16 @@ const bookCtrl = require('../controllers/book');
 const auth = require('../middleware/auth');
 const { upload, processImage } = require('../middleware/multer-config');
 
+const processImageIfFile = (req, res, next) => {
+  if (req.file) {
+    processImage(req, res, next);
+  } else {
+    next();
+  }
+};
+
 router.post('/', auth, upload, processImage, bookCtrl.createBook);
-router.put('/:id', auth, upload, processImage, bookCtrl.updateBook);
+router.put('/:id', auth, upload, processImageIfFile, bookCtrl.updateBook);
 router.delete('/:id', auth, bookCtrl.deleteBook);
 router.get('/bestrating', bookCtrl.showBestRatings)
 router.get('/:id', bookCtrl.showOneBook);
