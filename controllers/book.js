@@ -1,19 +1,44 @@
+const validator = require('validator');
 const Book = require("../models/book");
 const fs = require("fs");
+
+function validateEntry(book) {
+  // Limites de longueur
+  if (
+    !book.title || !validator.isLength(book.title, { min: 1, max: 100 }) ||
+    !book.author || !validator.isLength(book.author, { min: 1, max: 50 }) ||
+    !book.genre || !validator.isLength(book.genre, { min: 1, max: 30 })
+  ) {
+    return { valid: false, error: "Champs invalides ou trop longs." };
+  }
+  // Vérification année pertinente 
+  if (book.year && (book.year < 1000 || book.year > new Date().getFullYear())) {
+    return { valid: false, error: "Année invalide." };
+  }
+  // Prévention des injections XSS
+  book.title = validator.escape(book.title);
+  book.author = validator.escape(book.author);
+  book.genre = validator.escape(book.genre);
+  return { valid: true, book };
+}
 
 exports.createBook = (req, res, next) => {
   const bookObject = JSON.parse(req.body.book);
   delete bookObject._id;
   delete bookObject._userId;
-  const book = new Book({
-    ...bookObject,
+  const { valid, error, book } = validateEntry(bookObject);
+  if (!valid) {
+    return res.status(400).json({ error });
+  }
+  const newBook = new Book({
+    ...book,
     userId: req.auth.userId,
     imageUrl: `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
     }`,
   });
 
-  book
+  newBook
     .save()
     .then(() => {
       res.status(201).json({ message: "Livre ajouté !" });
@@ -99,8 +124,11 @@ exports.updateBook = (req, res, next) => {
           }
         });
       }
-
-      Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
+      const { valid, error, book: validatedBook } = validateEntry(bookObject);
+      if (!valid) {
+        return res.status(400).json({ error });
+      }
+      Book.updateOne({ _id: req.params.id }, { ...validatedBook, _id: req.params.id })
         .then(() => res.status(200).json({ message: "Livre modifié avec succès!" }))
         .catch((error) => res.status(400).json({ error }));
     })
