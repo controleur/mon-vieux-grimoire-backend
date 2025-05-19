@@ -94,7 +94,8 @@ averageRating: Number
 - **JWT** : authentification par token sur toutes les routes sensibles
 - **Vérification d’unicité** : e-mail unique dans la base
 - **Contrôle d’accès** : seul le propriétaire d’un livre peut le modifier ou le supprimer
-- **Gestion des erreurs** : les erreurs sont renvoyées telles qu’elles sont produites, sans modification.
+- **Gestion des erreurs** : les erreurs sont renvoyées telles qu’elles sont produites, sans modification
+- **Validation des entrées** : Les données entrées par les utilisateurs sont validées en terme de longueur et les injections XSS sont prévenues
 
 ---
 
@@ -137,9 +138,10 @@ npm start
 - **Base de donnée** : MongoDB 8.0.9
 - **Modèles de données** : Mongoose 7.8.7 (version compatible avec unique validator)
 - **Variables d'environnement** : Dotenv 16.5.0
-### Middlewares
+- **Validation des entrées** : validator 13.15
+- **Vérification d'unicité** : mongoose unique validator 4.0.1
 - **Gestion de token** : jsonwebtoken 9.0.2
 - **Téléchargement de fichiers** : Multer 1.4.5-lts.2
 - **Optimisation des images** : Sharp 0.34.1
 - **Cryptage** : Bcrypt 5.1.1
-- **Vérification d'unicité** : mongoose unique validator 4.0.1
+
