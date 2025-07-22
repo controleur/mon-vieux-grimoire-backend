@@ -19,8 +19,8 @@ const swaggerDefinition = {
       description: 'Serveur de développement'
     },
     {
-      url: 'https://api.monvieuxgrimoire.com',
-      description: 'Serveur de production'
+      url: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://votre-app-vercel.vercel.app',
+      description: 'Serveur de production Vercel'
     }
   ],
   components: {
