@@ -23,14 +23,49 @@ app.use((req, res, next) => {
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // Route pour la documentation Swagger
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  customSiteTitle: "Mon Vieux Grimoire API Documentation",
-  customfavIcon: "/images/favicon.ico",
-  customCss: `
-    .topbar-wrapper .download-url-wrapper { display: none }
-    .swagger-ui .topbar { background-color: #2c3e50; }
-  `
-}));
+
+// Route pour servir le fichier swagger.json
+app.get('/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
+// Route pour Swagger UI via CDN
+app.get('/api-docs', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+      <meta charset="UTF-8">
+      <title>Mon Vieux Grimoire API Documentation</title>
+      <link rel="icon" href="/images/favicon.ico" />
+      <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css" />
+      <style>
+        .swagger-ui .topbar { background-color: #2c3e50; }
+      </style>
+    </head>
+    <body>
+      <div id="swagger-ui"></div>
+      <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"></script>
+      <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-standalone-preset.js"></script>
+      <script>
+        window.onload = function() {
+          const ui = SwaggerUIBundle({
+            url: '/swagger.json',
+            dom_id: '#swagger-ui',
+            presets: [
+              SwaggerUIBundle.presets.apis,
+              SwaggerUIStandalonePreset
+            ],
+            layout: "StandaloneLayout"
+          });
+          window.ui = ui;
+        };
+      </script>
+    </body>
+    </html>
+  `);
+});
 
 app.use('/api/books', bookRoutes);
 
