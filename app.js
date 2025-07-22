@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bookRoutes = require('./routes/book');
 const userRoutes = require('./routes/user');
 const path = require('path');
+const { swaggerUi, swaggerSpec } = require('./swagger');
 require("dotenv").config(); //ajout dotenv pour masquer la string de connexion
 
 mongoose.connect(process.env.DATABASE) //string contenue dans .env
@@ -20,6 +21,16 @@ app.use((req, res, next) => {
     next();
   });
 app.use('/images', express.static(path.join(__dirname, 'images')));
+
+// Route pour la documentation Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customSiteTitle: "Mon Vieux Grimoire API Documentation",
+  customfavIcon: "/images/favicon.ico",
+  customCss: `
+    .topbar-wrapper .download-url-wrapper { display: none }
+    .swagger-ui .topbar { background-color: #2c3e50; }
+  `
+}));
 
 app.use('/api/books', bookRoutes);
 
