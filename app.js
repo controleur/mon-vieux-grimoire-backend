@@ -50,6 +50,7 @@ app.get('/api-docs', (req, res) => {
       <link rel="icon" href="/images/favicon.ico" />
       <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css" />
       <style>
+        body { background: white; }
         .swagger-ui .topbar { background-color: #2c3e50; }
       </style>
     </head>
